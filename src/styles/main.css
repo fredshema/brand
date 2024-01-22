@@ -1,0 +1,110 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
+@import url("navigation.css");
+@import url("utilities.css");
+
+:root {
+  --primary-color: #030712;
+  --secondary-color: #111827;
+  --accent-color: #a7bde0;
+  --light-color: #f8f8f8;
+  --gray-dark: #374151;
+}
+
+* {
+  box-sizing: border-box;
+  text-rendering: optimizeLegibility;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--primary-color);
+  color: var(--light-color);
+  font-family: "Inter", sans-serif;
+}
+
+#hero {
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#about {
+  background-color: var(--secondary-color);
+}
+
+#skills {
+  background-color: var(--primary-color);
+
+  .skill {
+    margin: 1rem 1rem 0 1rem;
+
+    img {
+      width: 100%;
+      height: 60px;
+      object-fit: contain;
+    }
+  }
+}
+
+#blogs {
+  background-color: var(--secondary-color);
+
+  .blog-card {
+    background-color: var(--primary-color);
+    border-radius: 10px;
+    max-width: 320px;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+  }
+}
+
+#portfolio {
+  background-color: var(--secondary-color);
+
+  .portfolio-card {
+    background-color: var(--primary-color);
+    border-radius: 10px;
+    max-width: 320px;
+    overflow: hidden;
+
+    .repo-img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+
+    a {
+      color: var(--accent-color);
+      display: inline;
+      text-decoration: none;
+      .icon {
+        vertical-align: text-top;
+      }
+    }
+  }
+}
+
+#contact {
+  background-color: var(--primary-color);
+  color: var(--light-color);
+
+  .contact {
+    width: fit-content;
+    margin: 0 auto;
+  }
+
+  a {
+    color: var(--accent-color);
+    text-decoration: none;
+    flex-grow: 0;
+  }
+}

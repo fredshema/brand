@@ -1,0 +1,35 @@
+.navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .logo {
+    text-wrap: nowrap;
+  }
+
+  .nav-links {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    width: 100%;
+    justify-content: flex-end;
+    margin: 0;
+
+    li {
+      list-style: none;
+      padding: 0 0.5rem;
+
+      a {
+        position: relative;
+        color: var(--light-color);
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        height: 100%;
+        cursor: pointer;
+        transition: all 0.3s ease-in-out;
+        padding: 0 0.15rem;
+      }
+    }
+  }
+}
