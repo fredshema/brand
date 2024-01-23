@@ -19,8 +19,18 @@ html,
 body {
   margin: 0;
   padding: 0;
-  background-color: var(--primary-color);
+  background-color: var(--secondary-color);
   color: var(--light-color);
+  font-family: "Inter", sans-serif;
+}
+
+a {
+  color: var(--accent-color);
+  text-decoration: none;
+}
+
+input,
+input::placeholder {
   font-family: "Inter", sans-serif;
 }
 
@@ -30,6 +40,7 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  background-color: var(--primary-color);
 }
 
 #about {
@@ -106,5 +117,20 @@ body {
     color: var(--accent-color);
     text-decoration: none;
     flex-grow: 0;
+  }
+}
+
+#login,
+#signup {
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  form {
+    max-width: 370px;
+    width: 100%;
+    margin: 0 auto;
   }
 }

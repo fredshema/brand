@@ -18,8 +18,8 @@
 }
 
 .py-4 {
-  padding-top: 1.5rem;
-  padding-bottom: 1.5rem;
+  padding-top: 1.5rem !important;
+  padding-bottom: 1.5rem !important;
 }
 
 .py-5 {
@@ -50,6 +50,14 @@
 
 .mb-5 {
   margin-bottom: 2rem !important;
+}
+
+.mb-30 {
+  margin-bottom: 30px !important;
+}
+
+.mb-50 {
+  margin-bottom: 50px !important;
 }
 
 .mt-0 {
@@ -171,4 +179,50 @@
 .mw-500 {
   max-width: 500px;
   margin: 0 auto;
+}
+
+.font-weight-light {
+  font-weight: 300;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea {
+  width: 100%;
+  outline: none;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border-radius: 5px;
+  transition: all 0.3s ease-in-out;
+  border: none;
+  background-color: var(--accent-color);
+  color: var(--primary-color);
+  font-weight: 500;
+
+  &:focus {
+    border-color: var(--gray-dark);
+  }
+
+  &::placeholder {
+    color: var(--gray-dark);
+    font-weight: 500;
+  }
+}
+
+input[type="submit"] {
+  width: 100%;
+  outline: none;
+  padding: 0.75rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 5px;
+  background-color: var(--primary-color);
+  border: 1px solid var(--light-color);
+  color: var(--light-color);
 }

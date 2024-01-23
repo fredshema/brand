@@ -3,9 +3,61 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="styles/main.css" />
     <title>Login | Shema's Blog</title>
   </head>
   <body>
-    <h1>Login</h1>
+    <header class="navigation" id="home">
+      <nav class="container py-4">
+        <div class="logo">
+          <h1 class="m-0">/ Fred /</h1>
+        </div>
+        <ul class="nav-links">
+          <li class="nav-link"><a class="active" href="index.html">Home</a></li>
+          <li class="nav-link"><a href="index.html#about">About Me</a></li>
+          <li class="nav-link"><a href="index.html#skills">Skills</a></li>
+          <li class="nav-link"><a href="index.html#blogs">Blogs</a></li>
+          <li class="nav-link"><a href="index.html#portfolio">Portfolio</a></li>
+          <li class="nav-link"><a href="index.html#contact">Contact</a></li>
+          <li class="nav-link"><a href="login.html">Login</a></li>
+          <li class="nav-link"><a href="signup.html">Sign Up</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <section id="login">
+      <div class="container">
+        <div class="text-center mb-50">
+          <h1 class="text-xl mb-0 font-weight-light">Sign in</h1>
+          <p>Sign in to manage your blogs</p>
+        </div>
+
+        <form action="">
+          <div class="form-group">
+            <input type="email" name="email" id="email" placeholder="Email" />
+          </div>
+          <div class="form-group">
+            <input
+              type="password"
+              name="password"
+              id="password"
+              placeholder="Password"
+            />
+          </div>
+          <div class="form-group mb-30">
+            <div class="row">
+              <div class="col form-control">
+                <input type="checkbox" name="remember" id="remember" />
+                <label for="remember">Remember me</label>
+              </div>
+              <div class="col-auto">
+                <a href="#">Forgot password?</a>
+              </div>
+            </div>
+          </div>
+          <input type="submit" value="Login" class="btn" />
+        </form>
+      </div>
+    </section>
   </body>
 </html>
