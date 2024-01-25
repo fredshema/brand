@@ -64,23 +64,23 @@
         }
       }
     }
+  }
 
-    &.active {
-      .nav-links {
-        height: 100vh;
-      }
+  &.mobile .active {
+    .nav-links {
+      height: 100vh;
+    }
 
-      .line:nth-child(1) {
-        transform: rotate(45deg) translate(5px, 5px);
-      }
+    .line:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
 
-      .line:nth-child(2) {
-        opacity: 0;
-      }
+    .line:nth-child(2) {
+      opacity: 0;
+    }
 
-      .line:nth-child(3) {
-        transform: rotate(-45deg) translate(7px, -6px);
-      }
+    .line:nth-child(3) {
+      transform: rotate(-45deg) translate(7px, -6px);
     }
   }
 }

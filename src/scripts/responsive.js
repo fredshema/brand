@@ -1,14 +1,20 @@
+window.addEventListener('resize', resize)
 window.onload = function () {
     resize()
     const toggleButton = document.querySelector('.navigation .toggle')
     const nav = document.querySelector('.navigation nav')
+    const navLinks = document.querySelectorAll('.navigation nav a')
 
     toggleButton.addEventListener('click', () => {
         nav.classList.toggle('active')
     })
-}
 
-window.addEventListener('resize', resize)
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            nav.classList.remove('active')
+        })
+    })
+}
 
 function resize() {
     const nav = document.querySelector('.navigation')
