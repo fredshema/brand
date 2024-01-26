@@ -61,6 +61,25 @@
           cursor: pointer;
           transition: all 0.3s ease-in-out;
           padding: 0 0.15rem;
+
+          &::after {
+            content: "";
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--light-color);
+            transform-origin: left;
+            transition: all 0.15s ease-in-out;
+          }
+
+          &:hover,
+          &.active {
+            &::after {
+              width: 100%;
+            }
+          }
         }
       }
     }

@@ -1,9 +1,14 @@
+console.log(window)
 window.addEventListener('resize', resize)
-window.onload = function () {
+window.addEventListener('load', function () {
     resize()
     const toggleButton = document.querySelector('.navigation .toggle')
     const nav = document.querySelector('.navigation nav')
     const navLinks = document.querySelectorAll('.navigation nav a')
+
+    if(!toggleButton || !nav || !navLinks) {
+        return
+    }
 
     toggleButton.addEventListener('click', () => {
         nav.classList.toggle('active')
@@ -14,7 +19,7 @@ window.onload = function () {
             nav.classList.remove('active')
         })
     })
-}
+})
 
 function resize() {
     const nav = document.querySelector('.navigation')

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="../images/logo.png" />
+    <link rel="stylesheet" href="../styles/main.css" />
+    <title>All Blogs | Dashboard | Shema's Blog</title>
+  </head>
+  <body>
+    <header class="navigation" id="home">
+      <nav class="container py-4">
+        <div class="logo">
+          <h1 class="m-0">/ Fred /</h1>
+        </div>
+        <ul class="nav-links">
+          <li class="nav-link"><a href="dashboard.html">Dashboard</a></li>
+          <li class="nav-link"><a href="../index.html">Logout</a></li>
+        </ul>
+      </nav>
+    </header>
+    <section id="body-content">
+      <div class="container py-5">
+        <div class="row align-items-center">
+          <div class="col">
+            <h1 class="text-lg mt-0 mb-3">All Blogs</h1>
+            <p class="my-0">Manage your blogs</p>
+          </div>
+          <div class="col-auto">
+            <a href="add-blog.html" class="btn">Add Blog</a>
+          </div>
+        </div>
+
+        <div class="table-container mt-4">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Title</th>
+                <th class="text-center">Reads</th>
+                <th class="text-center">Likes</th>
+                <th class="text-center">Comments</th>
+                <th>Created At</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+      </div>
+    </section>
+    <script>
+      window.addEventListener("load", function(){
+        const articles = [
+          {
+            title: "Kigali Calling",
+            reads: 69,
+            likes: 40,
+            comments: 23,
+            createdAt: "13 Feb 2023"
+          },
+          {
+            title: "Gorilla Gadgets",
+            reads: 53,
+            likes: 30,
+            comments: 29,
+            createdAt: "12 March 2023"
+          },
+          {
+            title: "From farm to firewall",
+            reads: 35,
+            likes: 89,
+            comments: 42,
+            createdAt: "12 Apr 2023"
+          }
+        ]
+
+        const deleteArticle = (index) => {
+          alert(`Are you sure you want to delete '${articles[index].title}'?`)
+        }
+
+        const tableBody = document.querySelector("tbody")
+        
+        articles.forEach((article, index) => {
+          const row = document.createElement("tr")
+
+          const actions = document.createElement("td")
+          const editBtn = document.createElement("a")
+          editBtn.href = "edit-blog.html"
+          editBtn.innerText = "Edit"
+          editBtn.classList.add("mr-1", "btn", "btn-xs", "btn-secondary")
+
+          const deleteBtn = document.createElement("a")
+          deleteBtn.href = "#"
+          deleteBtn.innerText = "Delete"
+          deleteBtn.classList.add("btn", "btn-xs", "btn-danger")
+          deleteBtn.addEventListener("click", () => deleteArticle(index))
+
+          actions.appendChild(editBtn)
+          actions.appendChild(deleteBtn)
+
+          row.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${article.title}</td>
+            <td class="text-center">${article.reads}</td>
+            <td class="text-center">${article.likes}</td>
+            <td class="text-center">${article.comments}</td>
+            <td>${article.createdAt}</td>
+          `
+          row.appendChild(actions)
+          tableBody.appendChild(row)
+        })
+      })
+    </script>
+  </body>
+</html>
