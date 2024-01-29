@@ -185,7 +185,7 @@ input::placeholder {
   margin-top: calc(40px + 2rem);
 
   form {
-    max-width: 370px;
+    max-width: 450px;
     width: 100%;
     margin: 0 auto;
   }
