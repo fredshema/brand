@@ -35,7 +35,11 @@
 
     <section id="signup">
       <div class="container">
-        <form action="admin/dashboard.html" class="bg-primary p-5 rounded-lg shadow">
+        <form
+          action="admin/dashboard.html"
+          class="bg-primary p-5 rounded-lg shadow"
+          id="signup-form"
+        >
           <div class="text-center mb-50">
             <h1 class="text-xl my-0 font-weight-light">Sign up</h1>
             <p>Register to manage your blogs</p>
@@ -48,9 +52,11 @@
               id="names"
               placeholder="Full names"
             />
+            <span id="error" class="text-danger hide text-sm"></span>
           </div>
           <div class="form-group">
             <input type="email" name="email" id="email" placeholder="Email" />
+            <span id="error" class="text-danger hide text-sm"></span>
           </div>
           <div class="form-group">
             <input
@@ -59,6 +65,7 @@
               id="password"
               placeholder="Password"
             />
+            <span id="error" class="text-danger hide text-sm"></span>
           </div>
           <div class="form-group mb-30">
             <input
@@ -67,11 +74,91 @@
               id="confirm_password"
               placeholder="Confirm Password"
             />
+            <span id="error" class="text-danger hide text-sm"></span>
           </div>
           <input type="submit" value="Register" class="btn btn-block" />
         </form>
       </div>
     </section>
     <script src="scripts/responsive.js"></script>
+    <script>
+      window.addEventListener("load", function () {
+        const form = document.querySelector("#signup-form");
+        const names = document.querySelector("#names");
+        const email = document.querySelector("#email");
+        const password = document.querySelector("#password");
+        const confirm_password = document.querySelector("#confirm_password");
+
+        const namesError = document.querySelector("#names + span");
+        const emailError = document.querySelector("#email + span");
+        const passwordError = document.querySelector("#password + span");
+        const confirm_passwordError = document.querySelector(
+          "#confirm_password + span"
+        );
+
+        names.addEventListener("keyup", function () {
+          if (!namesError.classList.contains("hide")) {
+            namesError.classList.add("hide");
+          }
+        });
+
+        email.addEventListener("keyup", function () {
+          if (!emailError.classList.contains("hide")) {
+            emailError.classList.add("hide");
+          }
+        });
+
+        password.addEventListener("keyup", function () {
+          if (!passwordError.classList.contains("hide")) {
+            passwordError.classList.add("hide");
+          }
+        });
+
+        confirm_password.addEventListener("keyup", function () {
+          if (!confirm_passwordError.classList.contains("hide")) {
+            confirm_passwordError.classList.add("hide");
+          }
+        });
+
+        form.addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          let valid = true;
+
+          const nameRegex = /^.{3,}$/;
+          const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+          const passwordRegex = /^[a-zA-Z0-9]{6,}$/;
+
+          if (!nameRegex.test(names.value)) {
+            namesError.classList.remove("hide");
+            namesError.innerHTML = "Please enter a valid name";
+            valid = false;
+          }
+
+          if (!emailRegex.test(email.value)) {
+            emailError.classList.remove("hide");
+            emailError.innerHTML = "Please enter a valid email";
+            valid = false;
+          }
+
+          if (!passwordRegex.test(password.value)) {
+            passwordError.classList.remove("hide");
+            passwordError.innerHTML = "Password must be at least 6 characters";
+            valid = false;
+          }
+
+          if (password.value !== confirm_password.value) {
+            confirm_passwordError.classList.remove("hide");
+            confirm_passwordError.innerHTML = "Passwords do not match";
+            valid = false;
+          }
+
+          if (!valid) return;
+
+          const formAction = form.getAttribute("action");
+          window.location.href = formAction;
+        });
+      });
+    </script>
   </body>
 </html>

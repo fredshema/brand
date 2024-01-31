@@ -35,7 +35,11 @@
 
     <section id="login">
       <div class="container">
-        <form action="admin/dashboard.html" class="bg-primary p-5 rounded-lg shadow">
+        <form
+          action="admin/dashboard.html"
+          class="bg-primary p-5 rounded-lg shadow"
+          id="login-form"
+        >
           <div class="text-center mb-50">
             <h1 class="text-xl my-0 font-weight-light">Sign in</h1>
             <p>Sign in to manage your blogs</p>
@@ -43,6 +47,7 @@
 
           <div class="form-group">
             <input type="email" name="email" id="email" placeholder="Email" />
+            <span id="error" class="text-danger hide text-sm"></span>
           </div>
           <div class="form-group">
             <input
@@ -51,6 +56,7 @@
               id="password"
               placeholder="Password"
             />
+            <span id="error" class="text-danger hide text-sm"></span>
           </div>
           <div class="form-group mb-30">
             <div class="row">
@@ -68,5 +74,52 @@
       </div>
     </section>
     <script src="scripts/responsive.js"></script>
+    <script>
+      window.addEventListener("load", function () {
+        const form = document.querySelector("#login-form");
+        const email = document.querySelector("#email");
+        const password = document.querySelector("#password");
+        const emailError = document.querySelector("#email + span");
+        const passwordError = document.querySelector("#password + span");
+
+        email.addEventListener("keyup", function () {
+          if (!emailError.classList.contains("hide")) {
+            emailError.classList.add("hide");
+          }
+        });
+
+        password.addEventListener("keyup", function () {
+          if (!passwordError.classList.contains("hide")) {
+            passwordError.classList.add("hide");
+          }
+        });
+
+        form.addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          let valid = true;
+
+          const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+          const passwordRegex = /^[a-zA-Z0-9]{6,}$/;
+
+          if (!emailRegex.test(email.value)) {
+            emailError.classList.remove("hide");
+            emailError.innerHTML = "Please enter a valid email";
+            valid = false;
+          }
+
+          if (!passwordRegex.test(password.value)) {
+            passwordError.classList.remove("hide");
+            passwordError.innerHTML = "Password must be at least 6 characters";
+            valid = false;
+          }
+
+          if (!valid) return;
+
+          const formAction = form.getAttribute("action");
+          window.location.href = formAction;
+        });
+      });
+    </script>
   </body>
 </html>
