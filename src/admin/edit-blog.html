@@ -31,17 +31,19 @@
           <p class="my-0">Edit your blog and publish it to the world</p>
         </div>
 
-        <form action="" class="form" id="add-blog-form">
+        <form action="dashboard.html" class="form" id="edit-blog-form">
           <div class="form-group">
             <div class="form-control">
               <label for="title">Title</label>
               <input type="text" name="title" id="title" />
+              <span id="error" class="text-danger hide text-sm"></span>
             </div>
           </div>
           <div class="form-group">
             <div class="form-control">
               <label for="content">Content</label>
               <textarea name="content" id="content" rows="10"></textarea>
+              <span id="error" class="text-danger hide text-sm"></span>
             </div>
           </div>
           <div class="form-group">
@@ -57,17 +59,108 @@
                 placeholder="Select"
                 style="display: none"
               />
+              <span id="error" class="text-danger hide text-sm"></span>
             </div>
           </div>
 
           <div class="form-group">
             <div class="form-control">
-              <!-- <input type="submit" value="Publish" class="btn btn-block" /> -->
-              <a href="dashboard.html" class="btn btn-block"> Publish </a>
+              <button type="submit" class="btn btn-block">Publish</button>
             </div>
           </div>
         </form>
       </div>
     </section>
+    <script src="../scripts/responsive.js"></script>
+    <script>
+      var article = null;
+      const processImage = (id, input) => {
+        if (input.files && input.files[0]) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            const articles = JSON.parse(localStorage.getItem("articles")) || [];
+            const article = articles.find((article) => article.id === id);
+            article.image = e.target.result;
+            localStorage.setItem("articles", JSON.stringify(articles));
+          };
+          reader.readAsDataURL(input.files[0]);
+        }
+      };
+
+      const loadArticle = () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const articleId = urlParams.get("article");
+        const articles = JSON.parse(localStorage.getItem("articles")) || [];
+        article = articles.find((article) => article.id == articleId);
+
+        if (!article) {
+          alert("Article not found");
+          window.location.href = "dashboard.html";
+        }
+
+        const title = document.querySelector("#title");
+        const content = document.querySelector("#content");
+        title.value = article.title;
+        content.value = article.content;
+      };
+
+      window.addEventListener("load", loadArticle);
+
+      window.addEventListener("load", function () {
+        const form = document.querySelector("#edit-blog-form");
+        const title = document.querySelector("#title");
+        const content = document.querySelector("#content");
+        const image = document.querySelector("#image");
+        const titleError = document.querySelector("#title + span");
+        const contentError = document.querySelector("#content + span");
+
+        title.addEventListener("keyup", function () {
+          if (!titleError.classList.contains("hide")) {
+            titleError.classList.add("hide");
+          }
+        });
+
+        content.addEventListener("keyup", function () {
+          if (!contentError.classList.contains("hide")) {
+            contentError.classList.add("hide");
+          }
+        });
+
+        form.addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          let valid = true;
+
+          if (title.value.trim() === "") {
+            titleError.classList.remove("hide");
+            titleError.innerHTML = "Title is required";
+            valid = false;
+          }
+
+          if (content.value.trim() === "") {
+            contentError.classList.remove("hide");
+            contentError.innerHTML = "Content is required";
+            valid = false;
+          }
+
+          if (!valid) return;
+
+          const formAction = form.getAttribute("action");
+
+          article.title = title.value;
+          article.content = content.value;
+
+          if (image.value.trim() !== "") {
+            processImage(article.id, image);
+          }
+
+          const articles = JSON.parse(localStorage.getItem("articles")) || [];
+          const index = articles.findIndex((a) => a.id === article.id);
+          articles[index] = article;
+          localStorage.setItem("articles", JSON.stringify(articles));
+          window.location.href = formAction;
+        });
+      });
+    </script>
   </body>
 </html>

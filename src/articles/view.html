@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="../images/logo.png" />
+    <link rel="stylesheet" href="../styles/main.css" />
+    <title>Article | Shema's Blog</title>
+  </head>
+  <body>
+    <header class="navigation" id="home">
+      <nav class="container py-4">
+        <div class="logo">
+          <h1 class="m-0">/ Fred /</h1>
+        </div>
+        <div class="toggle">
+          <div class="line"></div>
+          <div class="line"></div>
+          <div class="line"></div>
+        </div>
+        <ul class="nav-links">
+          <li class="nav-link">
+            <a href="../index.html#hero">Home</a>
+          </li>
+          <li class="nav-link"><a href="../index.html#about">About Me</a></li>
+          <li class="nav-link"><a href="../index.html#skills">Skills</a></li>
+          <li class="nav-link"><a href="../index.html#blogs">Blogs</a></li>
+          <li class="nav-link">
+            <a href="../index.html#portfolio">Portfolio</a>
+          </li>
+          <li class="nav-link"><a href="../index.html#contact">Contact</a></li>
+          <li class="nav-link"><a href="../login.html">Login</a></li>
+          <li class="nav-link"><a href="../signup.html">Sign Up</a></li>
+        </ul>
+      </nav>
+    </header>
+    <section id="article">
+      <div class="container pb-5">
+        <div class="article-head">
+          <div class="article-img">
+            <img src="" alt="" id="article-img" />
+          </div>
+          <h1 class="text-lg mt-0 mb-3" id="article-title"></h1>
+          <p class="my-0 text-sm">By Fred Shema</p>
+          <p class="my-0 text-sm" id="article-date"></p>
+        </div>
+        <article id="article-content" class="mt-3"></article>
+      </div>
+    </section>
+    <script src="../scripts/responsive.js"></script>
+    <script>
+      const loadArticle = () => {
+        const url = new URL(window.location.href);
+        const articleId = url.searchParams.get("article");
+        const articles = JSON.parse(localStorage.getItem("articles")) || [];
+        const article = articles.find((article) => article.id == articleId);
+
+        if (article) {
+          document.title = article.title + " | Shema's Blog";
+          document.getElementById("article-img").src = article.image;
+          document.getElementById("article-title").textContent = article.title;
+          document.getElementById("article-date").textContent =
+            article.createdAt;
+          document.getElementById("article-content").innerHTML =
+            article.content;
+        } else {
+          alert("Article not found");
+          window.location.href = "../index.html";
+        }
+      };
+
+      window.addEventListener("load", loadArticle);
+    </script>
+  </body>
+</html>

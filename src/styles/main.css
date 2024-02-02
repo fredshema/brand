@@ -57,9 +57,15 @@ a {
 }
 
 p,
-li {
+li,
+article {
   color: var(--gray-lighter);
   line-height: 1.5;
+}
+
+article{
+  text-wrap: balance;
+  white-space: pre-wrap;
 }
 
 input,
@@ -199,6 +205,7 @@ input::placeholder {
   max-width: 900px;
   width: 100%;
   margin: 0 auto;
+  margin-top: calc(40px + 2rem);
 
   p,
   li {
@@ -213,7 +220,8 @@ input::placeholder {
   }
 }
 
-#add-blog-form {
+#add-blog-form,
+#edit-blog-form {
   max-width: 600px;
   width: 100%;
   margin: 0 auto;

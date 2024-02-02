@@ -53,44 +53,31 @@
           </table>
       </div>
     </section>
+    <script src="../scripts/responsive.js"></script>
     <script>
       window.addEventListener("load", function(){
-        const articles = [
-          {
-            title: "Kigali Calling",
-            reads: 69,
-            likes: 40,
-            comments: 23,
-            createdAt: "13 Feb 2023"
-          },
-          {
-            title: "Gorilla Gadgets",
-            reads: 53,
-            likes: 30,
-            comments: 29,
-            createdAt: "12 March 2023"
-          },
-          {
-            title: "From farm to firewall",
-            reads: 35,
-            likes: 89,
-            comments: 42,
-            createdAt: "12 Apr 2023"
-          }
-        ]
+        const articles = JSON.parse(localStorage.getItem("articles")) || []
 
         const deleteArticle = (index) => {
           alert(`Are you sure you want to delete '${articles[index].title}'?`)
         }
 
         const tableBody = document.querySelector("tbody")
-        
+
+        if(articles.length === 0){
+          tableBody.innerHTML = `
+            <tr>
+              <td colspan="7" class="text-center py-5">No articles found</td>
+            </tr>
+          `
+        }else{
         articles.forEach((article, index) => {
           const row = document.createElement("tr")
 
           const actions = document.createElement("td")
+          
           const editBtn = document.createElement("a")
-          editBtn.href = "edit-blog.html"
+          editBtn.href = "edit-blog.html?article=" + article.id
           editBtn.innerText = "Edit"
           editBtn.classList.add("mr-1", "btn", "btn-xs", "btn-secondary")
 
@@ -113,8 +100,9 @@
           `
           row.appendChild(actions)
           tableBody.appendChild(row)
-        })
-      })
+        });
+      }
+      });
     </script>
   </body>
 </html>

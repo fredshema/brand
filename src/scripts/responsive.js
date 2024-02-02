@@ -1,4 +1,3 @@
-console.log(window)
 window.addEventListener('resize', resize)
 window.addEventListener('load', function () {
     resize()
