@@ -59,7 +59,12 @@
         const articles = JSON.parse(localStorage.getItem("articles")) || []
 
         const deleteArticle = (index) => {
-          alert(`Are you sure you want to delete '${articles[index].title}'?`)
+          const confirm = alert(`Are you sure you want to delete '${articles[index].title}'?`);
+          if(confirm){
+            articles.splice(index, 1)
+            localStorage.setItem("articles", JSON.stringify(articles))
+            location.reload()
+          }
         }
 
         const tableBody = document.querySelector("tbody")

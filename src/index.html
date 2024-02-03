@@ -370,8 +370,8 @@
       const loadArticles = () => {
         const articlesContainer = document.querySelector("#blog-cards");
         const articles = JSON.parse(localStorage.getItem("articles")) || [];
-        const length = articles.length > 3 ? 3 : articles.length;
-        for (let i = 0; i < length ; i++) {
+        
+        for (let i = 0; i < articles.length ; i++) {
           const article = articles[i];
           const card = document.createElement("a");
           card.classList.add("blog-card");
