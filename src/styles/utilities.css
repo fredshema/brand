@@ -39,7 +39,7 @@
   padding-bottom: 2.5rem !important;
 }
 
-.pb-5{
+.pb-5 {
   padding-bottom: 2.5rem !important;
 }
 
@@ -165,6 +165,11 @@
   max-width: 80%;
 }
 
+.col-12 {
+  flex: 0 0 100%;
+  max-width: 100%;
+}
+
 .col-auto {
   flex: 0 0 auto;
 }
@@ -176,6 +181,13 @@
 .icon {
   width: 1.15rem;
   height: 1.15rem;
+  margin-right: 0.5rem;
+  color: var(--light-color);
+}
+
+.icon-3 {
+  width: 2.5rem;
+  height: 2.5rem;
   margin-right: 0.5rem;
   color: var(--light-color);
 }
@@ -199,7 +211,7 @@
   color: var(--light-color) !important;
 }
 
-.text-danger{
+.text-danger {
   color: var(--danger-color) !important;
 }
 
@@ -294,6 +306,10 @@ textarea {
       margin-bottom: 0.5rem;
     }
   }
+}
+
+.cursor-pointer {
+  cursor: pointer;
 }
 
 .btn {
