@@ -327,8 +327,7 @@ textarea {
   &:hover {
     background-color: var(--light-color);
     color: var(--primary-color);
-    filter: brightness(1.35);
-    font-weight: 700;
+    filter: brightness(1.35)
   }
 
   &.btn-block {

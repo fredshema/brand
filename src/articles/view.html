@@ -144,10 +144,9 @@
 
             if (!articleLiked) {
               sessionStorage.setItem(likeSessionKey, true);
-              article.likes ? (article.likes += 1) : (article.likes = 1);
-            } else {
-              article.likes -= liked ? 1 : -1;
             }
+
+            liked ? (article.likes += 1) : (article.likes -= 1);
 
             if (article.likes < 0) {
               article.likes = 0;
@@ -159,5 +158,13 @@
           });
       });
     </script>
+    <!-- <script>
+      const articles = JSON.parse(localStorage.getItem("articles")) || [];
+      articles.forEach((article) => {
+        article.reads = 0;
+        article.likes = 0;
+      });
+      localStorage.setItem("articles", JSON.stringify(articles));
+    </script> -->
   </body>
 </html>
