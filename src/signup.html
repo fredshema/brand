@@ -43,6 +43,7 @@
           <div class="text-center mb-50">
             <h1 class="text-xl my-0 font-weight-light">Sign up</h1>
             <p>Register to manage your blogs</p>
+            <span id="general-error" class="text-danger hide text-sm"></span>
           </div>
 
           <div class="form-group">
@@ -51,11 +52,12 @@
               name="names"
               id="names"
               placeholder="Full names"
+              autocomplete="name"
             />
             <span id="error" class="text-danger hide text-sm"></span>
           </div>
           <div class="form-group">
-            <input type="email" name="email" id="email" placeholder="Email" />
+            <input type="email" name="email" id="email" placeholder="Email" autocomplete="email" />
             <span id="error" class="text-danger hide text-sm"></span>
           </div>
           <div class="form-group">
@@ -64,6 +66,7 @@
               name="password"
               id="password"
               placeholder="Password"
+              autocomplete="new-password"
             />
             <span id="error" class="text-danger hide text-sm"></span>
           </div>
@@ -73,6 +76,7 @@
               name="confirm_password"
               id="confirm_password"
               placeholder="Confirm Password"
+              autocomplete="new-password"
             />
             <span id="error" class="text-danger hide text-sm"></span>
           </div>

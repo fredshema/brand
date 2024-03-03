@@ -30,6 +30,7 @@
           <div class="col">
             <h1 class="text-lg mt-0 mb-3">All Blogs</h1>
             <p class="my-0">Manage your blogs</p>
+            <span id="general-error" class="text-danger hide text-sm"></span>
           </div>
           <div class="col-auto">
             <a href="add-blog.html" class="btn">Add Blog</a>
@@ -42,72 +43,154 @@
               <tr>
                 <th>#</th>
                 <th>Title</th>
-                <th class="text-center">Reads</th>
+                <th class="text-center">Views</th>
                 <th class="text-center">Likes</th>
                 <th class="text-center">Comments</th>
                 <th>Created At</th>
                 <th>Actions</th>
               </tr>
             </thead>
-            <tbody></tbody>
+            <tbody>
+              <tr class="overflow-hidden" id="loading">
+                <td colspan="7" class="text-center py-5 relative">
+                  <div class="loader"></div>
+                  <span
+                    id="general-error"
+                    class="text-danger hide text-sm"
+                  ></span>
+                </td>
+              </tr>
+            </tbody>
           </table>
+        </div>
       </div>
     </section>
     <script src="../scripts/responsive.js"></script>
+    <script src="../scripts/env.js"></script>
     <script>
-      window.addEventListener("load", function(){
-        const articles = JSON.parse(localStorage.getItem("articles")) || []
+      const deleteArticle = (index) => {
+        const articles = JSON.parse(localStorage.getItem("articles")) || [];
+        const confirm = window.confirm(
+          `Are you sure you want to delete '${articles[index].title}'?`
+        );
+        if (confirm) {
+          const url = `${env.API_URL}/api/articles/${articles[index]._id}`;
+          const token = localStorage.getItem("token");
+          const generalError = document.getElementById("general-error");
+          const delBtn = document.getElementById(`delete-${index}`);
+          delBtn.setAttribute("disabled", "disabled");
 
-        const deleteArticle = (index) => {
-          const confirm = window.confirm(`Are you sure you want to delete '${articles[index].title}'?`);
-          console.log(confirm)
-          if(confirm){
-            articles.splice(index, 1)
-            localStorage.setItem("articles", JSON.stringify(articles))
-            location.reload()
-          }
+          fetch(url, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: token,
+            },
+          })
+            .then((res) => res.status === 204 ? { status: "success" } : res.json())
+            .then((data) => {
+              if (data.status === "error") {
+                generalError.classList.remove("hide");
+                generalError.innerHTML = data.message;
+                return;
+              }
+
+              if (data.status === "success") {
+                generalError.classList.add("hide");
+                window.location.reload();
+              }
+            })
+            .catch((error) => {
+              console.error(error);
+              generalError.classList.remove("hide");
+              generalError.innerHTML = "An error occurred. Please try again";
+            })
+            .finally(() => {
+              delBtn.removeAttribute("disabled");
+            });
         }
+      };
+    </script>
+    <script>
+      window.addEventListener("load", function () {
+        const loading = document.getElementById("loading");
+        loading.classList.remove("hide");
 
-        const tableBody = document.querySelector("tbody")
+        const url = `${env.API_URL}/api/articles`;
+        fetch(url)
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.status === "error") {
+              generalError.innerHTML = data.message;
+              loading.classList.remove("hide");
+              return;
+            }
 
-        if(articles.length === 0){
-          tableBody.innerHTML = `
-            <tr>
-              <td colspan="7" class="text-center py-5">No articles found</td>
-            </tr>
-          `
-        }else{
-        articles.forEach((article, index) => {
-          const row = document.createElement("tr")
+            if (data.data.articles) {
+              localStorage.setItem(
+                "articles",
+                JSON.stringify(data.data.articles)
+              );
+              return;
+            }
+          })
+          .catch((error) => console.error(error))
+          .finally(() => {
+            setTimeout(() => {
+              loading.classList.add("hide");
+              const articles =
+                JSON.parse(localStorage.getItem("articles")) || [];
+              const tableBody = document.querySelector("tbody");
 
-          const actions = document.createElement("td")
-          
-          const editBtn = document.createElement("a")
-          editBtn.href = "edit-blog.html?article=" + article.id
-          editBtn.innerText = "Edit"
-          editBtn.classList.add("mr-1", "btn", "btn-xs", "btn-secondary")
+              if (articles.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="7" class="text-center py-5">No articles found</td></tr>`;
+              } else {
+                articles.forEach((article, index) => {
+                  const row = document.createElement("tr");
 
-          const deleteBtn = document.createElement("a")
-          deleteBtn.href = "#"
-          deleteBtn.innerText = "Delete"
-          deleteBtn.classList.add("btn", "btn-xs", "btn-danger")
-          deleteBtn.addEventListener("click", () => deleteArticle(index))
+                  const actions = document.createElement("td");
 
-          actions.appendChild(editBtn)
-          actions.appendChild(deleteBtn)
+                  const editBtn = document.createElement("a");
+                  editBtn.href = "edit-blog.html?article=" + article._id;
+                  editBtn.innerText = "Edit";
+                  editBtn.classList.add(
+                    "mr-1",
+                    "btn",
+                    "btn-xs",
+                    "btn-secondary"
+                  );
 
-          row.innerHTML = `
-            <td>${index + 1}</td>
-            <td>${article.title}</td>
-            <td class="text-center">${article.reads}</td>
-            <td class="text-center">${article.likes}</td>
-            <td class="text-center">${article.comments}</td>
-            <td>${article.createdAt}</td>
-          `
-          row.appendChild(actions)
-          tableBody.appendChild(row)
-        });
-      }
+                  const deleteBtn = document.createElement("a");
+                  deleteBtn.href = "#";
+                  deleteBtn.innerText = "Delete";
+                  deleteBtn.id = `delete-${index}`;
+                  deleteBtn.classList.add("btn", "btn-xs", "btn-danger");
+                  deleteBtn.addEventListener("click", () => {
+                    deleteArticle(index);
+                  });
+
+                  actions.appendChild(editBtn);
+                  actions.appendChild(deleteBtn);
+
+                  row.innerHTML = `
+                  <td>${index + 1}</td>
+                  <td>${article.title}</td>
+                  <td class="text-center">${article.views ?? 0}</td>
+                  <td class="text-center">${article.likes ?? 0}</td>
+                  <td class="text-center">${article.comments_count ?? 0}</td>
+                  <td>${
+                    article.created_at
+                      ? new Date(article.created_at).toDateString()
+                      : "N/A"
+                  }</td>
+                 `;
+
+                  row.appendChild(actions);
+                  tableBody.appendChild(row);
+                });
+              }
+            });
+          }, 1000);
       });
     </script>
   </body>

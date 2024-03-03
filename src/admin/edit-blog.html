@@ -29,6 +29,7 @@
         <div class="text-center">
           <h1 class="text-lg mt-0 mb-3">Edit Blog</h1>
           <p class="my-0">Edit your blog and publish it to the world</p>
+          <span id="general-error" class="text-danger hide text-sm"></span>
         </div>
 
         <form action="dashboard.html" class="form" id="edit-blog-form">
@@ -64,15 +65,19 @@
             </div>
           </div>
 
-          <div class="form-group">
+          <div class="form-group overflow-hidden">
             <div class="form-control">
-              <button type="submit" class="btn btn-block">Publish</button>
+              <button type="submit" class="btn btn-block relative">
+                <span>Publish</span>
+                <div class="loader hide"></div>
+              </button>
             </div>
           </div>
         </form>
       </div>
     </section>
     <script src="../scripts/responsive.js"></script>
+    <script src="../scripts/env.js"></script>
     <script>
       var article = null;
       const processImage = (id, input) => {
@@ -92,7 +97,7 @@
         const urlParams = new URLSearchParams(window.location.search);
         const articleId = urlParams.get("article");
         const articles = JSON.parse(localStorage.getItem("articles")) || [];
-        article = articles.find((article) => article.id == articleId);
+        article = articles.find((article) => article._id == articleId);
 
         if (!article) {
           alert("Article not found");
@@ -114,6 +119,9 @@
         const image = document.querySelector("#image");
         const titleError = document.querySelector("#title + span");
         const contentError = document.querySelector("#content + span");
+        const laoder = document.querySelector(".loader");
+        const publishText = document.querySelector(".btn span");
+        const generalError = document.querySelector("#general-error");
 
         title.addEventListener("keyup", function () {
           if (!titleError.classList.contains("hide")) {
@@ -131,6 +139,7 @@
           e.preventDefault();
 
           let valid = true;
+          generalError.classList.add("hide");
 
           if (title.value.trim() === "") {
             titleError.classList.remove("hide");
@@ -145,21 +154,53 @@
           }
 
           if (!valid) return;
+          laoder.classList.remove("hide");
+          publishText.classList.add("text-transparent");
 
-          const formAction = form.getAttribute("action");
+          const url = `${env.API_URL}/api/articles/${article._id}`;
+          const token = localStorage.getItem("token");
 
-          article.title = title.value;
-          article.content = content.value;
-
+          const reqData = new FormData();
+          reqData.append("title", title.value);
+          reqData.append("content", content.value);
           if (image.value.trim() !== "") {
-            processImage(article.id, image);
+            reqData.append("image", image.files[0]);
           }
 
-          const articles = JSON.parse(localStorage.getItem("articles")) || [];
-          const index = articles.findIndex((a) => a.id === article.id);
-          articles[index] = article;
-          localStorage.setItem("articles", JSON.stringify(articles));
-          window.location.href = formAction;
+          fetch(url, {
+            method: "PUT",
+            headers: {
+              Authorization: `${token}`,
+            },
+            body: reqData,
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (data.status === "error") {
+                generalError.classList.remove("hide");
+                generalError.innerHTML = data.message;
+                return;
+              }
+
+              if (data.status === "fail") {
+                generalError.classList.remove("hide");
+                generalError.innerHTML = Object.values(data.data)[0];
+                return;
+              }
+
+              if (data.status === "success") {
+                generalError.classList.add("hide");
+                window.location.href = form.getAttribute("action");
+              }
+            })
+            .catch((err) => {
+              generalError.classList.remove("hide");
+              generalError.innerHTML = "An error occured. Please try again";
+            })
+            .finally(() => {
+              publishText.classList.remove("text-transparent");
+              laoder.classList.add("hide");
+            });
         });
       });
     </script>

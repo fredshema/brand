@@ -29,6 +29,7 @@
         <div class="text-center">
           <h1 class="text-lg mt-0 mb-3">New Blog</h1>
           <p class="my-0">Write a new blog and publish it to the world</p>
+          <span id="general-error" class="text-danger hide text-sm"></span>
         </div>
 
         <form action="dashboard.html" class="form" id="add-blog-form">
@@ -64,15 +65,19 @@
             </div>
           </div>
 
-          <div class="form-group">
+          <div class="form-group overflow-hidden">
             <div class="form-control">
-              <button type="submit" class="btn btn-block">Publish</button>
+              <button type="submit" class="btn btn-block relative">
+                <span>Publish</span>
+                <div class="loader hide"></div>
+              </button>
             </div>
           </div>
         </form>
       </div>
     </section>
     <script src="../scripts/responsive.js"></script>
+    <script src="../scripts/env.js"></script>
     <script>
       const processImage = (id, input) => {
         if (input.files && input.files[0]) {
@@ -94,6 +99,9 @@
         const titleError = document.querySelector("#title + span");
         const contentError = document.querySelector("#content + span");
         const imageError = document.querySelector("#image + span");
+        const laoder = document.querySelector(".loader");
+        const publishText = document.querySelector(".btn span");
+        const generalError = document.querySelector("#general-error");
 
         title.addEventListener("keyup", function () {
           if (!titleError.classList.contains("hide")) {
@@ -117,6 +125,7 @@
           e.preventDefault();
 
           let valid = true;
+          generalError.classList.add("hide");
 
           if (title.value.trim() === "") {
             titleError.classList.remove("hide");
@@ -137,24 +146,51 @@
           }
 
           if (!valid) return;
+          laoder.classList.remove("hide");
+          publishText.classList.add("text-transparent");
 
-          const formAction = form.getAttribute("action");
-          const id = new Date().getTime();
-          const article = {
-            id,
-            title: title.value,
-            content: content.value,
-            image: processImage(id, image),
-            reads: 0,
-            likes: 0,
-            comments: 0,
-            createdAt: new Date().toDateString(),
-          };
+          const url = `${env.API_URL}/api/articles`;
+          const token = localStorage.getItem("token");
 
-          const articles = JSON.parse(localStorage.getItem("articles")) || [];
-          articles.push(article);
-          localStorage.setItem("articles", JSON.stringify(articles));
-          window.location.href = formAction;
+          const reqData = new FormData();
+          reqData.append("title", title.value);
+          reqData.append("content", content.value);
+          reqData.append("image", image.files[0]);
+
+          fetch(url, {
+            method: "POST",
+            headers: {
+              Authorization: `${token}`
+            },
+            body: reqData,
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (data.status === "error") {
+                generalError.classList.remove("hide");
+                generalError.innerHTML = data.message;
+                return;
+              }
+
+              if (data.status === "fail") {
+                generalError.classList.remove("hide");
+                generalError.innerHTML = Object.values(data.data)[0];
+                return;
+              }
+
+              if (data.status === "success") {
+                generalError.classList.add("hide");
+                window.location.href = form.getAttribute("action");
+              }
+            })
+            .catch((err) => {
+              generalError.classList.remove("hide");
+              generalError.innerHTML = "An error occured. Please try again";
+            })
+            .finally(() => {
+              publishText.classList.remove("text-transparent");
+              laoder.classList.add("hide");
+            });
         });
       });
     </script>
