@@ -70,7 +70,10 @@
               </div>
             </div>
           </div>
-          <input type="submit" value="Login" class="btn btn-block" />
+          <div class="relative overflow-hidden">
+            <input type="submit" value="Login" class="btn btn-block">
+            <div class="loader hide"></div>
+          </div>
         </form>
       </div>
     </section>
@@ -84,6 +87,8 @@
         const emailError = document.querySelector("#email + span");
         const passwordError = document.querySelector("#password + span");
         const generalError = document.querySelector("#general-error");
+        const loader = document.querySelector(".loader");
+        const btn = document.querySelector("input[type=submit]");
 
         email.addEventListener("keyup", function () {
           if (!emailError.classList.contains("hide")) {
@@ -103,6 +108,7 @@
           let valid = true;
           generalError.classList.add("hide");
 
+
           const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
           const passwordRegex = /^[a-zA-Z0-9]{6,}$/;
 
@@ -119,13 +125,15 @@
           }
 
           if (!valid) return;
+          btn.classList.add("hide");
+          loader.classList.remove("hide");
 
+          const url = `${env.API_URL}/api/auth/login`;
           const reqData = {
             email: email.value,
             password: password.value,
           };
 
-          const url = `${env.API_URL}/api/auth/login`;
 
           fetch(url, {
             method: "POST",
@@ -153,9 +161,13 @@
               }
             })
             .catch((err) => {
+              console.err(err)
               generalError.classList.remove("hide");
               generalError.innerHTML = "An error occurred. Please try again";
-            });
+            }).finally(() => {
+              loader.classList.add("hide");
+              btn.classList.remove("hide");
+            })
         });
       });
     </script>

@@ -36,8 +36,8 @@
     <section id="signup">
       <div class="container">
         <form
-          action="admin/dashboard.html"
-          class="bg-primary p-5 rounded-lg shadow"
+          action="login.html"
+          class="bg-primary p-5 mt-3 rounded-lg shadow"
           id="signup-form"
         >
           <div class="text-center mb-50">
@@ -76,11 +76,15 @@
             />
             <span id="error" class="text-danger hide text-sm"></span>
           </div>
-          <input type="submit" value="Register" class="btn btn-block" />
+          <div class="relative overflow-hidden">
+            <input type="submit" value="Register" class="btn btn-block" />
+            <div class="loader hide"></div>
+          </div>
         </form>
       </div>
     </section>
     <script src="scripts/responsive.js"></script>
+    <script src="scripts/env.js"></script>
     <script>
       window.addEventListener("load", function () {
         const form = document.querySelector("#signup-form");
@@ -95,6 +99,9 @@
         const confirm_passwordError = document.querySelector(
           "#confirm_password + span"
         );
+        const generalError = document.querySelector("#general-error");
+        const loader = document.querySelector(".loader");
+        const btn = document.querySelector("input[type=submit]");
 
         names.addEventListener("keyup", function () {
           if (!namesError.classList.contains("hide")) {
@@ -124,6 +131,7 @@
           e.preventDefault();
 
           let valid = true;
+          generalError.classList.add("hide");
 
           const nameRegex = /^.{3,}$/;
           const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
@@ -154,9 +162,51 @@
           }
 
           if (!valid) return;
+          btn.classList.add("hide");
+          loader.classList.remove("hide");
 
-          const formAction = form.getAttribute("action");
-          window.location.href = formAction;
+          const url = `${env.API_URL}/api/auth/register`;
+          const reqData = {
+            names: names.value,
+            email: email.value,
+            password: password.value,
+          };
+
+          fetch(url, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(reqData),
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (data.status === "error") {
+                generalError.classList.remove("hide");
+                generalError.innerHTML = data.message;
+                return;
+              }
+
+              if (data.status === "fail") {
+                generalError.classList.remove("hide");
+                generalError.innerHTML = Object.values(data.data)[0];
+                return;
+              }
+
+              if (data.status === "success") {
+                generalError.classList.add("hide");
+                window.location.href = form.getAttribute("action");
+              }
+            })
+            .catch((err) => {
+              console.error(err);
+              generalError.classList.remove("hide");
+              generalError.innerHTML = "An error occurred. Please try again";
+            })
+            .finally(() => {
+              loader.classList.add("hide");
+              btn.classList.remove("hide");
+            });
         });
       });
     </script>
