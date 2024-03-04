@@ -114,6 +114,7 @@
     <script>
       window.addEventListener("load", function () {
         const loading = document.getElementById("loading");
+        const generalError = document.getElementById("general-error");
         loading.classList.remove("hide");
 
         const url = `${env.API_URL}/api/articles`;
@@ -126,7 +127,7 @@
               return;
             }
 
-            if (data.data.articles) {
+            if (data.status === "success") {
               localStorage.setItem(
                 "articles",
                 JSON.stringify(data.data.articles)
