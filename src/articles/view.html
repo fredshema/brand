@@ -64,55 +64,64 @@
       </div>
     </section>
     <script src="../scripts/responsive.js"></script>
+    <script src="../scripts/env.js"></script>
     <script>
-      const loadArticle = () => {
+      const loadArticle = async () => {
         const url = new URL(window.location.href);
         const articleId = url.searchParams.get("article");
         const likeSessionKey = "articleLiked-" + articleId;
         const readSessionKey = "articleRead-" + articleId;
         const articles = JSON.parse(localStorage.getItem("articles")) || [];
-        const article = articles.find((article) => article._id == articleId);
-
+        // const article = articles.find((article) => article._id == articleId);
         const articleRead = sessionStorage.getItem(readSessionKey);
         const articleLiked = sessionStorage.getItem(likeSessionKey);
 
-        if (article) {
-          document.title = article.title + " | Shema's Blog";
-          document.getElementById("article-img").src = article.image;
-          document.getElementById("article-title").textContent = article.title;
-          document.getElementById("article-date").textContent =
-            article.createdAt;
-          document.getElementById("article-content").innerHTML =
-            article.content;
+        console.log(articleLiked);
 
-          if (articleLiked === "true") {
-            document
-              .getElementById("like-btn")
-              .setAttribute("title", "Unlike this article");
-            document
-              .getElementById("like-btn")
-              .querySelector("img")
-              .classList.toggle("hide");
-            document
-              .getElementById("like-btn")
-              .querySelector("img:last-child")
-              .classList.toggle("hide");
-          } else {
-            document
-              .getElementById("like-btn")
-              .setAttribute("title", "Like this article");
-          }
+        const apiURL = `${env.API_URL}/api/articles/${articleId}`;
+        fetch(apiURL)
+          .then((res) => res.json())
+          .then((data) => {
+            const article = data.data.article;
+            if (data.status === "success") {
+              document.title = article.title + " | Shema's Blog";
+              document.getElementById("article-img").src = article.image;
+              document.getElementById("article-title").textContent =
+                article.title;
+              document.getElementById("article-date").textContent =
+                article.createdAt;
+              document.getElementById("article-content").innerHTML =
+                article.content;
 
-          if (articleRead !== "true") {
-            sessionStorage.setItem(readSessionKey, true);
-            article.reads ? (article.reads += 1) : (article.reads = 1);
-            articles[articles.indexOf(article)] = article;
-            localStorage.setItem("articles", JSON.stringify(articles));
-          }
-        } else {
-          alert("Article not found");
-          window.location.href = "../index.html";
-        }
+              if (articleLiked === "true") {
+                document
+                  .getElementById("like-btn")
+                  .setAttribute("title", "Unlike this article");
+                document
+                  .getElementById("like-btn")
+                  .querySelector("img")
+                  .classList.toggle("hide");
+                document
+                  .getElementById("like-btn")
+                  .querySelector("img:last-child")
+                  .classList.toggle("hide");
+              } else {
+                document
+                  .getElementById("like-btn")
+                  .setAttribute("title", "Like this article");
+              }
+
+              if (articleRead !== "true") {
+                sessionStorage.setItem(readSessionKey, true);
+                article.reads ? (article.reads += 1) : (article.reads = 1);
+                articles[articles.indexOf(article)] = article;
+                localStorage.setItem("articles", JSON.stringify(articles));
+              }
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       };
 
       window.addEventListener("load", loadArticle);
@@ -122,49 +131,44 @@
         document
           .getElementById("like-btn")
           .addEventListener("click", function () {
-            const articles = JSON.parse(localStorage.getItem("articles")) || [];
             const url = new URL(window.location.href);
             const articleId = url.searchParams.get("article");
-            const article = articles.find((article) => article._id == articleId);
-
             const likeSessionKey = "articleLiked-" + articleId;
 
-            const likeBtn = document.getElementById("like-btn");
             const articleLiked = sessionStorage.getItem(likeSessionKey);
-
-            likeBtn.querySelector("img").classList.toggle("hide");
-            likeBtn.querySelector("img:last-child").classList.toggle("hide");
+            const likeBtn = document.getElementById("like-btn");
             const liked = likeBtn
               .querySelector("img")
               .classList.contains("hide");
+
+            likeBtn.querySelector("img").classList.toggle("hide");
+            likeBtn.querySelector("img:last-child").classList.toggle("hide");
             likeBtn.setAttribute(
               "title",
               liked ? "Unlike this article" : "Like this article"
             );
 
-            if (!articleLiked) {
-              sessionStorage.setItem(likeSessionKey, true);
-            }
+            const apiURL = `${env.API_URL}/api/articles/${articleId}/${
+              articleLiked ? "unlike" : "like"
+            }`;
 
-            liked ? (article.likes += 1) : (article.likes -= 1);
-
-            if (article.likes < 0) {
-              article.likes = 0;
-            }
-
-            articles[articles.indexOf(article)] = article;
-            localStorage.setItem("articles", JSON.stringify(articles));
-            sessionStorage.setItem(likeSessionKey, liked);
+            fetch(apiURL, {
+              method: "GET",
+              headers: { "Content-Type": "application/json" },
+            })
+              .then((res) => res.json())
+              .then((data) => {
+                if (data.status === "success") {
+                  liked
+                    ? sessionStorage.removeItem(likeSessionKey)
+                    : sessionStorage.setItem(likeSessionKey, true);
+                }
+              })
+              .catch((err) => {
+                console.log(err);
+              });
           });
       });
     </script>
-    <!-- <script>
-      const articles = JSON.parse(localStorage.getItem("articles")) || [];
-      articles.forEach((article) => {
-        article.reads = 0;
-        article.likes = 0;
-      });
-      localStorage.setItem("articles", JSON.stringify(articles));
-    </script> -->
   </body>
 </html>
