@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/png" href="../images/logo.png" />
     <link rel="stylesheet" href="../styles/main.css" />
+    <link rel="stylesheet" href="../styles/article-view.css" />
     <title>Article | Shema's Blog</title>
   </head>
   <body>
@@ -34,33 +35,64 @@
         </ul>
       </nav>
     </header>
-    <section id="article">
+    <section id="article" class="loading">
       <div class="container pb-5">
-        <div class="article-head row">
+        <div class="article-head row flex-column">
           <div class="article-img col-12">
             <img src="" alt="" id="article-img" />
           </div>
-          <div class="col">
-            <h1 class="text-lg mt-0 mb-3" id="article-title"></h1>
-            <p class="my-0 text-sm">By Fred Shema</p>
-            <p class="my-0 text-sm" id="article-date"></p>
-          </div>
-          <div class="col-auto">
-            <span id="like-btn" class="cursor-pointer">
-              <img
-                class="icon-3"
-                src="../images/icons/like-icon.png"
-                alt="Like"
-              />
-              <img
-                class="icon-3 hide"
-                src="../images/icons/like-filled-icon.png"
-                alt="Like"
-              />
-            </span>
+          <div class="col row">
+            <div class="col">
+              <h1 class="text-lg mt-0 mb-3" id="article-title"></h1>
+              <p class="my-0 text-sm" id="article-author"></p>
+              <p class="my-0 text-sm" id="article-date"></p>
+            </div>
+            <div class="col-auto flex-center hide" id="article-actions">
+              <span id="like-count" class="px-3"></span>
+              <span id="like-btn" class="cursor-pointer">
+                <img
+                  class="icon-3"
+                  src="../images/icons/like-icon.png"
+                  alt="Like"
+                />
+                <img
+                  class="icon-3 hide"
+                  src="../images/icons/like-filled-icon.png"
+                  alt="Like"
+                />
+              </span>
+            </div>
           </div>
         </div>
         <article id="article-content" class="mt-3"></article>
+      </div>
+      <hr />
+      <div class="container pb-5" id="comments-container">
+        <h2 class="text-lg">Comments</h2>
+        <form class="row align-items-end gap-3">
+          <div class="form-group col mb-0">
+            <label for="comment">Leave a comment</label>
+            <textarea
+              id="comment"
+              class="form-control mt-2"
+              rows="1"
+              required
+            ></textarea>
+          </div>
+          <div class="col-auto relative overflow-hidden">
+            <input type="submit" class="btn" value="Submit" id="comment-btn" />
+            <div class="loader hide"></div>
+          </div>
+        </form>
+        <div id="comments" class="mt-3"></div>
+        <div id="no-comments">
+          <p class="text-center py-3">No comments yet</p>
+        </div>
+      </div>
+    </section>
+    <section id="no-article" class="hide">
+      <div class="container flex-center py-5">
+        <h2 class="text-lg">Article not found</h2>
       </div>
     </section>
     <script src="../scripts/responsive.js"></script>
@@ -72,26 +104,32 @@
         const likeSessionKey = "articleLiked-" + articleId;
         const readSessionKey = "articleRead-" + articleId;
         const articles = JSON.parse(localStorage.getItem("articles")) || [];
-        // const article = articles.find((article) => article._id == articleId);
         const articleRead = sessionStorage.getItem(readSessionKey);
         const articleLiked = sessionStorage.getItem(likeSessionKey);
+        const param = articleRead ? "" : "?firstView=1";
 
-        console.log(articleLiked);
-
-        const apiURL = `${env.API_URL}/api/articles/${articleId}`;
+        const apiURL = `${env.API_URL}/api/articles/${articleId}${param}`;
         fetch(apiURL)
           .then((res) => res.json())
           .then((data) => {
+            console.log(data.data);
             const article = data.data.article;
             if (data.status === "success") {
               document.title = article.title + " | Shema's Blog";
               document.getElementById("article-img").src = article.image;
               document.getElementById("article-title").textContent =
                 article.title;
-              document.getElementById("article-date").textContent =
-                article.createdAt;
+              document.getElementById("article-author").textContent =
+                "By " + article.author;
+              document.getElementById("article-date").textContent = new Date(
+                article.created_at
+              ).toDateString();
               document.getElementById("article-content").innerHTML =
                 article.content;
+              document.getElementById("like-count").textContent = article.likes;
+              document
+                .getElementById("article-actions")
+                .classList.remove("hide");
 
               if (articleLiked === "true") {
                 document
@@ -110,17 +148,16 @@
                   .getElementById("like-btn")
                   .setAttribute("title", "Like this article");
               }
-
-              if (articleRead !== "true") {
-                sessionStorage.setItem(readSessionKey, true);
-                article.reads ? (article.reads += 1) : (article.reads = 1);
-                articles[articles.indexOf(article)] = article;
-                localStorage.setItem("articles", JSON.stringify(articles));
-              }
+              sessionStorage.setItem(readSessionKey, true);
             }
           })
           .catch((err) => {
             console.log(err);
+            document.getElementById("article").classList.add("hide");
+            document.getElementById("no-article").classList.remove("hide");
+          })
+          .finally(() => {
+            document.getElementById("article").classList.remove("loading");
           });
       };
 
@@ -162,11 +199,120 @@
                   liked
                     ? sessionStorage.removeItem(likeSessionKey)
                     : sessionStorage.setItem(likeSessionKey, true);
+                  document.getElementById("like-count").textContent =
+                    data.data.article.likes;
                 }
               })
               .catch((err) => {
                 console.log(err);
               });
+          });
+      });
+    </script>
+    <script>
+      window.addEventListener("load", function () {
+        const url = new URL(window.location.href);
+        const articleId = url.searchParams.get("article");
+        const commentsContainer = document.getElementById("comments-container");
+        const noComments = document.getElementById("no-comments");
+        const comments = document.getElementById("comments");
+        const form = commentsContainer.querySelector("form");
+        const commentInput = form.querySelector("textarea");
+        const commentBtn = form.querySelector("#comment-btn");
+
+        form.addEventListener("submit", function (e) {
+          e.preventDefault();
+          const loader = form.querySelector(".loader");
+          const token = localStorage.getItem("token");
+          const comment = commentInput.value;
+
+          if (comment.trim() === "") return;
+          loader.classList.remove("hide");
+          commentBtn.classList.add("text-transparent");
+          const apiURL = `${env.API_URL}/api/articles/${articleId}/comments`;
+          fetch(apiURL, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: token,
+            },
+            body: JSON.stringify({ content: comment.trim() }),
+          })
+            .then((res) => {
+              if (res.status === 401) {
+                const ok = confirm("You need to login to comment");
+                if (ok) {
+                  window.location.href = "../login.html?redirect=" + url;
+                }
+              }
+              return res.json();
+            })
+            .then((data) => {
+              if (data.status === "error") {
+                console.log(data);
+                return;
+              }
+              if (data.status === "success") {
+                commentInput.value = "";
+                const commentDiv = document.createElement("div");
+                commentDiv.classList.add("comment");
+                commentDiv.innerHTML = `
+                  <div class="comment-head mb-2">
+                    <span class="comment-author">
+                      ${data.data.comment.user.name}
+                    </span>
+                    <span class="comment-date">${new Date(
+                      data.data.comment.created_at
+                    ).toLocaleString()}</span>
+                  </div>
+                  <div class="comment-content">${
+                    data.data.comment.content
+                  }</div>
+                `;
+                comments.insertBefore(commentDiv, comments.firstChild);
+                noComments.classList.add("hide");
+              }
+            })
+            .catch((err) => {
+              console.log(err.status);
+            })
+            .finally(() => {
+              commentBtn.classList.remove("text-transparent");
+              loader.classList.add("hide");
+            });
+        });
+
+        const apiURL = `${env.API_URL}/api/articles/${articleId}/comments`;
+        fetch(apiURL, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.status === "success") {
+              if (data.data.comments.length > 0) {
+                noComments.classList.add("hide");
+                data.data.comments.forEach((comment) => {
+                  const commentDiv = document.createElement("div");
+                  commentDiv.classList.add("comment");
+                  commentDiv.innerHTML = `
+                    <div class="comment-head mb-2">
+                      <span class="comment-author">
+                        ${comment.user.name}
+                      </span>
+                      <span class="comment-date">${new Date(
+                        comment.created_at
+                      ).toLocaleString()}</span>
+                    </div>
+                    <div class="comment-content">${comment.content}</div>
+                  `;
+                  comments.insertBefore(commentDiv, comments.firstChild);
+                });
+              }
+            }
+          })
+          .catch((err) => {
+            console.log(err);
           });
       });
     </script>

@@ -1,0 +1,118 @@
+:root {
+  --gradient: var(--primary-color)
+    linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(83, 83, 83, 0.2) 25%,
+      transparent 50%
+    );
+}
+
+#no-article {
+  max-width: 900px;
+  width: 100%;
+  margin: 0 auto;
+  margin-top: calc(40px + 2rem);
+}
+
+#article {
+  max-width: 900px;
+  width: 100%;
+  margin: 0 auto;
+  margin-top: calc(40px + 2rem);
+
+  p,
+  li {
+    line-height: 1.75;
+  }
+
+  .article-img {
+    width: 100%;
+    max-height: 350px;
+    margin-bottom: 1rem;
+    img {
+      object-fit: cover;
+      width: 100%;
+      height: inherit;
+      max-height: inherit;
+    }
+  }
+}
+
+#article.loading {
+  .article-img {
+    min-height: 250px;
+    animation: shimmer-animation 3s infinite linear;
+    background: var(--gradient);
+    background-size: 1000px 100%;
+    margin-bottom: 1rem;
+  }
+
+  #article-title {
+    height: 1.5em;
+    width: 20rem;
+    animation: shimmer-animation 3s infinite linear;
+    animation-delay: 100ms;
+    background: var(--gradient);
+    background-size: 1000px 100%;
+  }
+
+  #article-author,
+  #article-date {
+    height: 1em;
+    width: 12rem;
+    animation: shimmer-animation 3s infinite linear;
+    animation-delay: 200ms;
+    background: var(--gradient);
+    background-size: 1000px 100%;
+  }
+
+  #article-content {
+    height: 10em;
+    width: 100%;
+    animation: shimmer-animation 3s infinite linear;
+    animation-delay: -300ms;
+    background: var(--gradient);
+    background-size: 1000px 100%;
+  }
+}
+
+#comments-container {
+  .comment:not(:last-child) {
+    border-bottom: 1px dashed #6f6f6f;
+    padding-bottom: 0.85rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .comment-author {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-right: 0.25rem;
+    color: var(--accent-color);
+  }
+
+  .comment-date {
+    font-size: 0.75rem;
+    font-weight: 300;
+    color: var(--accent-color);
+  }
+
+  .comment-content {
+    font-size: 0.85rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+}
+
+hr {
+  border-color: #6f6f6f;
+}
+
+@keyframes shimmer-animation {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}

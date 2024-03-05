@@ -402,6 +402,7 @@
           const article = articles[i];
           const card = document.createElement("a");
           card.classList.add("blog-card");
+          card.classList.add("mx-auto");
           card.href = `articles/view.html?article=${article._id}`;
           card.innerHTML = `
             <div class="img">
