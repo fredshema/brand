@@ -20,7 +20,9 @@
         </div>
         <ul class="nav-links">
           <li class="nav-link"><a href="../dashboard.html">Dashboard</a></li>
-          <li class="nav-link"><a class="active" href="./index.html">Messages</a></li>
+          <li class="nav-link">
+            <a class="active" href="./index.html">Messages</a>
+          </li>
           <li class="nav-link"><a href="../../index.html">Logout</a></li>
         </ul>
       </nav>
@@ -38,6 +40,9 @@
         <div class="messages-container mt-4">
           <!-- Messages will be added here -->
         </div>
+        <div class="empty hide">
+          <h3 class="text-md text-center py-5">No messages yet</h3>
+        </div>
         <div class="relative py-5">
           <div class="loader"></div>
         </div>
@@ -50,6 +55,7 @@
         const messagesContainer = document.querySelector(".messages-container");
         const generalError = document.querySelector("#general-error");
         const loader = document.querySelector(".loader");
+        const empty = document.querySelector(".empty");
 
         const url = `${env.API_URL}/api/messages`;
         fetch(url, {
@@ -62,6 +68,10 @@
           .then((res) => res.json())
           .then((data) => {
             if (data.status === "success") {
+              if (data.data.messages.length === 0) {
+                empty.classList.remove("hide");
+                return;
+              }
               data.data.messages.forEach((message) => {
                 const messageDiv = document.createElement("div");
                 messageDiv.classList.add("message");
@@ -69,17 +79,21 @@
                   <div class="row mb-3">
                     <div class="col">
                       <h3 class="mt-0 mb-2 text-md">${message.name}</h3>
-                      <h4 class="text-sm m-0">
+                      <h4 class="text-2sm m-0 font-weight-light">
                         <a href="mailto:${message.email}">${message.email}</a>
                       </h4>
                     </div>
-                    <div class="col-auto">
-                      <p class="text-sm">${new Date(
+                    <div class="col-auto text-right">
+                      <span class="text-sm">${new Date(
                         message.created_at
-                      ).toLocaleString()}</p>
+                      ).toLocaleString()}</span>
+                      <br/>
+                      <span id="delete-btn" data-id="${
+                        message._id
+                      }" class="pill cursor-pointer text-danger mb-0 mt-2 text-2sm">Delete</span>
                     </div>
                   </div>
-                  <p>${message.message}</p>
+                  <p class="text-white">${message.message}</p>
                 `;
                 messagesContainer.appendChild(messageDiv);
               });
@@ -95,6 +109,44 @@
           })
           .finally(() => {
             loader.classList.add("hide");
+            const deleteBtns = document.querySelectorAll("#delete-btn");
+            deleteBtns.forEach((btn) => {
+              btn.addEventListener("click", function () {
+                const id = this.getAttribute("data-id");
+                const ok = confirm(
+                  "Are you sure you want to delete this message?"
+                );
+                if (!ok) return;
+                const url = `${env.API_URL}/api/messages/${id}`;
+                fetch(url, {
+                  method: "DELETE",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: localStorage.getItem("token"),
+                  },
+                })
+                  .then((res) => {
+                    if (res.status === 204) {
+                      this.parentElement.parentElement.parentElement.remove();
+                      return { status: "success" };
+                    }
+
+                    return res.json();
+                  })
+                  .then((data) => {
+                    if (data.status === "error") {
+                      generalError.textContent = data.message;
+                      generalError.classList.remove("hide");
+                    }
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                    generalError.textContent =
+                      "An error occurred. Please try again later.";
+                    generalError.classList.remove("hide");
+                  });
+              });
+            });
           });
       });
     </script>
