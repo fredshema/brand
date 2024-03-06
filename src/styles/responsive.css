@@ -55,6 +55,10 @@
 }
 
 @media screen and (max-width: 425px) {
+  .col-2 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
   #about {
     & > .container > .row {
       justify-content: center;

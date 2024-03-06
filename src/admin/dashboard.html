@@ -19,7 +19,10 @@
           <div class="line"></div>
         </div>
         <ul class="nav-links">
-          <li class="nav-link"><a href="dashboard.html">Dashboard</a></li>
+          <li class="nav-link">
+            <a class="active" href="dashboard.html">Dashboard</a>
+          </li>
+          <li class="nav-link"><a href="messages/index.html">Messages</a></li>
           <li class="nav-link"><a href="../index.html">Logout</a></li>
         </ul>
       </nav>
@@ -87,7 +90,9 @@
               Authorization: token,
             },
           })
-            .then((res) => res.status === 204 ? { status: "success" } : res.json())
+            .then((res) =>
+              res.status === 204 ? { status: "success" } : res.json()
+            )
             .then((data) => {
               if (data.status === "error") {
                 generalError.classList.remove("hide");

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="../../images/logo.png" />
+    <link rel="stylesheet" href="../../styles/main.css" />
+    <title>All Blogs | Dashboard | Shema's Blog</title>
+  </head>
+  <body>
+    <header class="navigation" id="home">
+      <nav class="container py-4">
+        <div class="logo">
+          <h1 class="m-0">/ Fred /</h1>
+        </div>
+        <div class="toggle">
+          <div class="line"></div>
+          <div class="line"></div>
+          <div class="line"></div>
+        </div>
+        <ul class="nav-links">
+          <li class="nav-link"><a href="../dashboard.html">Dashboard</a></li>
+          <li class="nav-link"><a class="active" href="./index.html">Messages</a></li>
+          <li class="nav-link"><a href="../../index.html">Logout</a></li>
+        </ul>
+      </nav>
+    </header>
+    <section id="body-content">
+      <div class="container py-5">
+        <div class="row align-items-center">
+          <div class="col">
+            <h1 class="text-lg mt-0 mb-2">Messages</h1>
+            <p class="my-0 text-md">Recent messages from contact section</p>
+            <span id="general-error" class="text-danger hide text-sm"></span>
+          </div>
+        </div>
+
+        <div class="messages-container mt-4">
+          <!-- Messages will be added here -->
+        </div>
+        <div class="relative py-5">
+          <div class="loader"></div>
+        </div>
+      </div>
+    </section>
+    <script src="../../scripts/responsive.js"></script>
+    <script src="../../scripts/env.js"></script>
+    <script>
+      window.addEventListener("load", function () {
+        const messagesContainer = document.querySelector(".messages-container");
+        const generalError = document.querySelector("#general-error");
+        const loader = document.querySelector(".loader");
+
+        const url = `${env.API_URL}/api/messages`;
+        fetch(url, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: localStorage.getItem("token"),
+          },
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.status === "success") {
+              data.data.messages.forEach((message) => {
+                const messageDiv = document.createElement("div");
+                messageDiv.classList.add("message");
+                messageDiv.innerHTML = `
+                  <div class="row mb-3">
+                    <div class="col">
+                      <h3 class="mt-0 mb-2 text-md">${message.name}</h3>
+                      <h4 class="text-sm m-0">
+                        <a href="mailto:${message.email}">${message.email}</a>
+                      </h4>
+                    </div>
+                    <div class="col-auto">
+                      <p class="text-sm">${new Date(
+                        message.created_at
+                      ).toLocaleString()}</p>
+                    </div>
+                  </div>
+                  <p>${message.message}</p>
+                `;
+                messagesContainer.appendChild(messageDiv);
+              });
+            } else {
+              generalError.textContent = data.message;
+              generalError.classList.remove("hide");
+            }
+          })
+          .catch((err) => {
+            generalError.textContent =
+              "An error occurred. Please try again later.";
+            generalError.classList.remove("hide");
+          })
+          .finally(() => {
+            loader.classList.add("hide");
+          });
+      });
+    </script>
+  </body>
+</html>
